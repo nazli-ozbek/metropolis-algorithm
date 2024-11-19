@@ -83,6 +83,5 @@ def main():
     plot_path(best_solution, cities, least_energy)
     print(f"Minimal total distance: {least_energy:.2f}")
 
-# Execute the program
 if __name__ == "__main__":
     main()

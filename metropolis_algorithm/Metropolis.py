@@ -16,7 +16,8 @@ cities = np.array([
     [0.46786624, 0.38511662], [0.53191193, 0.38229725], [0.20038992, 0.71712527], [0.85241791, 0.51498287]
 ])
 
-
+#cities -> the list of cities travelled
+#path -> list of city indices showing the order
 def energy(path, cities):
     distance = 0.0
     for i in range(len(path)):
@@ -26,7 +27,10 @@ def energy(path, cities):
         distance += between
     return distance
 
-
+#cities -> the list of cities travelled
+# t -> initial temperature
+# iterations_num -> total number of iterations
+# a -> cooling factor
 def metropolis(cities, t, iterations_num, a):
     path = list(range(len(cities)))
     random.shuffle(path)
@@ -53,7 +57,9 @@ def metropolis(cities, t, iterations_num, a):
         t = a * t
     return path, current_energy, energy_history
 
-
+#path -> list of city indices in the solution order
+#cities -> array of city coordinates
+#current_energy -> total distance of the best solution
 def plot_path(path, cities, current_energy):
     plt.figure(figsize=(10, 6))
     ordered_cities = cities[path]
@@ -71,7 +77,7 @@ def plot_path(path, cities, current_energy):
     plt.legend()
     plt.show()
 
-
+#energy_history -> list of total distances during the iterations
 def plot_energy(energy_history):
     plt.figure(figsize=(10, 6))
     plt.plot(energy_history, label="Energy per Iteration")
@@ -81,6 +87,10 @@ def plot_energy(energy_history):
     plt.legend()
     plt.show()
 
+#all_energies -> stores the distances found
+#least_energy -> tracks minimum distance found
+#best_solution -> tracks the path with minimum distance
+#best_energy_history -> tracks the energy history of the best solutio
 
 def main():
     initial_temperature = 10.0
@@ -103,7 +113,7 @@ def main():
     plot_path(best_solution, cities, least_energy)
     plot_energy(best_energy_history)
 
-    print(f"Minimum total distance: {least_energy:.2f}")
+    print(f"Minimum total distance: {least_energy:.4f}")
     print("All energies from 100 runs:", all_energies)
 
 

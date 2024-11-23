@@ -2,6 +2,7 @@ import math
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+
 cities = np.array([
     [0.30521241, 0.18630380], [0.5416322, 0.75636134], [0.9146427, 0.56843619], [0.23487191, 0.71608927],
     [0.23744324, 0.04432229], [0.98550312, 0.31416236], [0.06900982, 0.23309370], [0.18780658, 0.84952662],
@@ -15,37 +16,42 @@ cities = np.array([
     [0.46786624, 0.38511662], [0.53191193, 0.38229725], [0.20038992, 0.71712527], [0.85241791, 0.51498287]
 ])
 
+
 def energy(path, cities):
     distance = 0.0
     for i in range(len(path)):
         city1 = cities[path[i]]
-        city2 = cities[path[(i + 1)% len(path)]]
-        between = math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
+        city2 = cities[path[(i + 1) % len(path)]]
+        between = math.sqrt((city1[0] - city2[0]) ** 2 + (city1[1] - city2[1]) ** 2)
         distance += between
     return distance
 
-## t-> temperature a -> alpha
-def metropolis(cities,t,iterations_num,a):
+
+def metropolis(cities, t, iterations_num, a):
     path = list(range(len(cities)))
     random.shuffle(path)
     current_energy = energy(path, cities)
+    energy_history = [current_energy]
+
     for i in range(iterations_num):
         new_path = path.copy()
-        r = random.randrange(0,len(path)-1)
-        tmp = new_path[r]
-        new_path[r] = new_path[r+1]
-        new_path[r+1] = tmp
+        x, y = random.sample(range(len(path)), 2)
+        temp = new_path[x]
+        new_path[x] = new_path[y]
+        new_path[y] = temp
         new_energy = energy(new_path, cities)
         if new_energy >= current_energy:
-            prob = math.exp(-(new_energy-current_energy)/t)
+            prob = math.exp(-(new_energy - current_energy) / t)
             if random.random() < prob:
                 path = new_path
                 current_energy = new_energy
         else:
             path = new_path
             current_energy = new_energy
-        t = a*t
-    return path,current_energy
+
+        energy_history.append(current_energy)
+        t = a * t
+    return path, current_energy, energy_history
 
 
 def plot_path(path, cities, current_energy):
@@ -57,7 +63,7 @@ def plot_path(path, cities, current_energy):
              color='cyan', lw=5)
     plt.plot(ordered_cities[:, 0], ordered_cities[:, 1], '-o', label=f"Total Distance: {current_energy:.2f}")
     start_city = ordered_cities[0]
-    plt.scatter(start_city[0], start_city[1], color='green', label='Starting City', zorder=5, s = 100)
+    plt.scatter(start_city[0], start_city[1], color='green', label='Starting City', zorder=5, s=100)
     plt.scatter(cities[:, 0], cities[:, 1], color='red', label='Cities', zorder=4)
     plt.title("TSP Solution")
     plt.xlabel("X Coordinate")
@@ -66,22 +72,40 @@ def plot_path(path, cities, current_energy):
     plt.show()
 
 
+def plot_energy(energy_history):
+    plt.figure(figsize=(10, 6))
+    plt.plot(energy_history, label="Energy per Iteration")
+    plt.xlabel("Iteration")
+    plt.ylabel("Energy (Total Distance)")
+    plt.title("Energy vs. Iterations")
+    plt.legend()
+    plt.show()
+
+
 def main():
-    initial_temperature = 1.0
-    iterations = 1000
+    initial_temperature = 10.0
+    iterations = 10000
     cooling_factor = 0.999
 
+    all_energies = []
     least_energy = float('inf')
     best_solution = None
+    best_energy_history = None
 
     for _ in range(100):
-        path, current_energy = metropolis(cities, initial_temperature, iterations, cooling_factor)
+        path, current_energy, energy_history = metropolis(cities, initial_temperature, iterations, cooling_factor)
+        all_energies.append(current_energy)
         if current_energy < least_energy:
             least_energy = current_energy
             best_solution = path
+            best_energy_history = energy_history
 
     plot_path(best_solution, cities, least_energy)
-    print(f"Minimal total distance: {least_energy:.2f}")
+    plot_energy(best_energy_history)
+
+    print(f"Minimum total distance: {least_energy:.2f}")
+    print("All energies from 100 runs:", all_energies)
+
 
 if __name__ == "__main__":
     main()

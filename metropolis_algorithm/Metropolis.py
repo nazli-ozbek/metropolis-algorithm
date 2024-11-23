@@ -90,7 +90,7 @@ def plot_energy(energy_history):
 #all_energies -> stores the distances found
 #least_energy -> tracks minimum distance found
 #best_solution -> tracks the path with minimum distance
-#best_energy_history -> tracks the energy history of the best solutio
+#best_energy_history -> tracks the energy history of the best solution
 
 def main():
     initial_temperature = 10.0

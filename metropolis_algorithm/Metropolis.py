@@ -93,9 +93,9 @@ def plot_energy(energy_history):
 #best_energy_history -> tracks the energy history of the best solution
 
 def main():
-    initial_temperature = 10.0
-    iterations = 10000
-    cooling_factor = 0.999
+    initial_temperature = 5.0
+    iterations = 1200000
+    cooling_factor = 0.999995
 
     all_energies = []
     least_energy = float('inf')
@@ -113,8 +113,10 @@ def main():
     plot_path(best_solution, cities, least_energy)
     plot_energy(best_energy_history)
 
+
+    print("All energies from runs:", all_energies)
+    print("*****")
     print(f"Minimum total distance: {least_energy:.4f}")
-    print("All energies from 100 runs:", all_energies)
 
 
 if __name__ == "__main__":
